@@ -68,7 +68,7 @@ def upload_summary(key, summary, genre, job):
     client = None
 
     try:
-        # Connect to MongoDB Atlas
+        # connet to atlas cluster
         client = MongoClient(
             os.environ["MONGODB_ATLAS_URL"],
             username=os.environ["MONGODB_ATLAS_USER"],
@@ -77,9 +77,9 @@ def upload_summary(key, summary, genre, job):
 
         now = datetime.now(timezone.utc)
 
-        # Access the gutenberg database and books collection
         gutenberg = client["gutenberg"]
 
+	# call update_one()
         result = gutenberg.books.update_one(
             {"_id": key},
             {
@@ -101,14 +101,16 @@ def upload_summary(key, summary, genre, job):
             }
         )
 
-        # Check whether the document exists
+        # check if doc exists
         if result.matched_count == 0:
             logger.warning("No document found with key: %s", key)
 
+    # log the error
     except PyMongoError as e:
         logger.error("Could not update document with key %s: %s", key, e)
         raise
-
+    
+    #close client
     finally:
         if client is not None:
             client.close()
@@ -121,7 +123,7 @@ def main():
     # set up logging
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
 
-    if len(sys.argv) != 2:
+    if len(sys.argv) != 3:
         logger.error("Usage: summarize.py BOOK_LIST TASK_ID")
         sys.exit(1)
 

@@ -1,0 +1,12 @@
+Job ID: 22811984
+Array Job ID: 22811506_71
+Cluster: shen
+User/Group: nky7nt/users
+State: COMPLETED (exit code 0)
+Nodes: 1
+Cores per node: 2
+CPU Utilized: 00:00:09
+CPU Efficiency: 32.14% of 00:00:28 core-walltime
+Job Wall-clock time: 00:00:14
+Memory Utilized: 1.36 GB
+Memory Efficiency: 8.51% of 16.00 GB (16.00 GB/node)
