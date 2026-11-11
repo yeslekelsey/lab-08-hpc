@@ -12,9 +12,8 @@ Redirect the command's output to `results/job-history.txt` and include the file 
 
 **Your answer:** Provide the entire command you used, including all CLI options.
 mkdir -p results
-sacct -S 2026-11-04 -X --format=JobId,JobName,NodeList,Partition,Account,User,State,Start,Elapsed > results/job_history.txt
-cat results/job_history.txt
-...
+sacct -S 2026-11-04 -X --format=JobId,JobName,NodeList,Partition,Account,User,State,Start,Elapsed > results/job-history.txt
+cat results/job-history.txt
 
 ## 2. Slurm: did every array task run at the same time?
 
@@ -25,8 +24,7 @@ You submitted your entire job array with one `sbatch` command, but Slurm schedul
 *Hint:* See [Part 1, Step 5](README.md#step-5-watch-the-job-array) in the README.
 
 **Your answer:** Did all tasks in the array start at the same time? Was the elapsed time identical for every task? Explain why or why not.
-No, all tasks in the array did not start at the same time. Also, the elapsed time was not identical for every task. This is because each task is treated as an independent job with its own requirements (explaining why Slurm does not run them all at the same time) and experiences varying hardware performance like network congestion (why elapsed time is different for each task) 
-...
+No, all tasks in the array did not start at the same time. Also, the elapsed time was not identical for every task. Most tasks took 12-16 s, but tasks 1-3 took 45 s. This is because summarize.py imports large libraries, read by the node from the file system (which is slow) but then for later tasks the libraries get stored in memory (which is faster). Also, the tasks start in groups because 3 GPU slices run at one time and the next group has to wait until slices are freed.
 
 ## 3. Slurm: did my job use what it asked for?
 
@@ -37,6 +35,5 @@ Suppose your next job array has 1,000 books instead of 101. Before you submit it
 *Hint:* `seff` takes the ID of one task, such as `4211873_1`. Compare its **Memory Utilized** and **Job Wall-clock time** with `--mem` and `--time` in your `summarize.slurm`.
 
 **Your answer:** How much memory and time did the task use, compared with what your script asked for? What would you change in your script, and why?
-Task 22811506_71 took 14 s and used 1.36 GB, compared to the 5 minutes and 16 GB outlined in summarize.slurm. Because of this, I would maybe change the time in my script to be a bit quicker, like 1 minute. 
-...
+Task 22811506_71 took 14 s and used 1.36 GB, compared to the 5 minutes and 16 GB outlined in summarize.slurm. The seff command also says there's only an 8.51% memory efficiency, so I would change the --mem to a much smaller number (like 5 GB to leave a margin incase a task uses more memory) to make it faster. For a run of 1000 books, this leaves more memory for other node users because the memory can be allocated to waiting time and scheduling.
 
